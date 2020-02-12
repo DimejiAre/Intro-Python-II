@@ -1,5 +1,6 @@
 from room import Room
 from player import Player
+from item import Item
 
 # Declare all the rooms
 
@@ -34,6 +35,16 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+# items
+
+item = {
+    'coin': Item("coin", "20 Gold coins"),
+    'sword': Item("sword", "For slaying Ogres")
+}
+
+# add items to rooms
+room['foyer'].add_item_room(item['coin'], item['sword'])
+
 #
 # Main
 #
@@ -57,26 +68,54 @@ name = input("\nEnter your player name: ")
 player = Player(name, 'outside')
 current_room = room[player.current_room]
 print(f"\nHello! {name}, Current Room: {player.current_room}")
+print(f"{current_room.view_items_room()}")
 
 while True:
-    decision = input("\nEnter Move Direction(n/e/s/w) or q to exit: ")
+    decision = input("Enter Command:\n\n1)Enter direction to move\n(n=North,s=South,e=East,w=West)\n2)Pick or Drop an item\n(take <item>, drop <item>)\n3)Enter i to check inventory\n4)Enter c to view current room\n5)Enter q to quit\n\n:")
+    action = decision.split(' ')
 
-    if decision is "s" and hasattr(current_room, 's_to'):
-        current_room = current_room.s_to
-        print(f"Current {current_room} \n")
-    elif decision is "n" and hasattr(current_room, 'n_to'):
-        current_room = current_room.n_to
-        print(f"Current {current_room} \n")
-    elif decision is "e" and hasattr(current_room, 'e_to'):
-        current_room = current_room.e_to
-        print(f"Current {current_room} \n")
-    elif decision is "w" and hasattr(current_room, 'w_to'):
-        current_room = current_room.w_to
-        print(f"Current {current_room} \n")
-    elif decision is "q":
-        print(f"Thank you for playing!")
-        break
+    if (len(action) > 1) and (action[0] == 'take' or action[0] == 'get'):
+        item = current_room.check_item_room(action[1])
+        if item:
+            print(item.on_take())
+            player.add_item_inventory(item)
+            current_room.remove_item_room(item.name)
+        else:
+            print("\n This item is not in this room")
+    elif len(action) > 1 and (action[0] == 'drop'):
+        item = player.get_item_name(action[1])
+        if item:
+            print(item.on_drop())
+            player.remove_item_inventory(item.name)
+            current_room.add_item_room(item)
+        else:
+            print("\n This item is not in your inventory")
     else:
-        print("Dead End!! There is no room in this direction\n")
+        if decision is "s" and hasattr(current_room, 's_to'):
+            current_room = current_room.s_to
+            print(f"\nCurrent {current_room} \n")
+            print(f"{current_room.view_items_room()}")
+        elif decision is "n" and hasattr(current_room, 'n_to'):
+            current_room = current_room.n_to
+            print(f"\nCurrent {current_room} \n")
+            print(f"{current_room.view_items_room()}")
+        elif decision is "e" and hasattr(current_room, 'e_to'):
+            current_room = current_room.e_to
+            print(f"\nCurrent {current_room} \n")
+            print(f"{current_room.view_items_room()}")
+        elif decision is "w" and hasattr(current_room, 'w_to'):
+            current_room = current_room.w_to
+            print(f"\nCurrent {current_room} \n")
+            print(f"{current_room.view_items_room()}")
+        elif decision is "i":
+            print(player.view_inventory())
+        elif decision is "c":
+            print(f"\nCurrent {current_room} \n")
+            print(f"{current_room.view_items_room()}")
+        elif decision is "q":
+            print(f"Thank you for playing!")
+            break
+        else:
+            print("Dead End!! There is no room in this direction\n")
 
     
