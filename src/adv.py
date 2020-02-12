@@ -1,4 +1,5 @@
 from room import Room
+from player import Player
 
 # Declare all the rooms
 
@@ -49,3 +50,33 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+print(f"\nWelcome to Adventure Game!!!")
+
+name = input("\nEnter your player name: ")
+player = Player(name, 'outside')
+current_room = room[player.current_room]
+print(f"\nHello! {name}, Current Room: {player.current_room}")
+
+while True:
+    decision = input("\nEnter Move Direction(n/e/s/w) or q to exit: ")
+
+    if decision is "s" and hasattr(current_room, 's_to'):
+        current_room = current_room.s_to
+        print(f"Current {current_room} \n")
+    elif decision is "n" and hasattr(current_room, 'n_to'):
+        current_room = current_room.n_to
+        print(f"Current {current_room} \n")
+    elif decision is "e" and hasattr(current_room, 'e_to'):
+        current_room = current_room.e_to
+        print(f"Current {current_room} \n")
+    elif decision is "w" and hasattr(current_room, 'w_to'):
+        current_room = current_room.w_to
+        print(f"Current {current_room} \n")
+    elif decision is "q":
+        print(f"Thank you for playing!")
+        break
+    else:
+        print("Dead End!! There is no room in this direction\n")
+
+    
