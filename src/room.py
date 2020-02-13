@@ -2,10 +2,11 @@
 # description attributes.
 
 class Room:
-    def __init__(self, name, description):
+    def __init__(self, name, description, is_light=True):
         self.name = name
         self.description = description
         self.items = []
+        self.is_light = is_light
 
     def __str__(self):
         return f"Room: {self.name}, Description: {self.description}"
@@ -25,7 +26,7 @@ class Room:
         output = "\nItems in the Room Are: \n"
         if len(self.items) > 0:
             for item in self.items:
-                output += f"{item.name}, {item.description}\n"
+                output += f"{item.name}: {item.description}\n"
             return output
         else:
             return f"No items in this room\n"

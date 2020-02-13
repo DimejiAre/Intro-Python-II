@@ -1,6 +1,7 @@
 from room import Room
 from player import Player
 from item import Item
+from lightsource import Lightsource
 
 # Declare all the rooms
 
@@ -16,7 +17,7 @@ into the darkness. Ahead to the north, a light flickers in
 the distance, but there is no way across the chasm."""),
 
     'narrow':   Room("Narrow Passage", """The narrow passage bends here from west
-to north. The smell of gold permeates the air."""),
+to north. The smell of gold permeates the air.""", False),
 
     'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
 chamber! Sadly, it has already been completely emptied by
@@ -39,11 +40,15 @@ room['treasure'].s_to = room['narrow']
 
 item = {
     'coin': Item("coin", "20 Gold coins"),
-    'sword': Item("sword", "For slaying Ogres")
+    'sword': Item("sword", "For slaying Ogres"),
+    'lamp': Lightsource("lamp", "lightsource"),
+    'pendant': Item("pendant", "crystal pendant")
 }
 
 # add items to rooms
-room['foyer'].add_item_room(item['coin'], item['sword'])
+room['foyer'].add_item_room(item['lamp'], item['pendant'])
+room['overlook'].add_item_room(item['coin'])
+room['narrow'].add_item_room(item['sword'])
 
 #
 # Main
@@ -81,7 +86,7 @@ while True:
             player.add_item_inventory(item)
             current_room.remove_item_room(item.name)
         else:
-            print("\n This item is not in this room")
+            print("\nThis item is not in this room")
     elif len(action) > 1 and (action[0] == 'drop'):
         item = player.get_item_name(action[1])
         if item:
@@ -89,29 +94,38 @@ while True:
             player.remove_item_inventory(item.name)
             current_room.add_item_room(item)
         else:
-            print("\n This item is not in your inventory")
+            print("\nThis item is not in your inventory")
     else:
         if decision is "s" and hasattr(current_room, 's_to'):
             current_room = current_room.s_to
-            print(f"\nCurrent {current_room} \n")
-            print(f"{current_room.view_items_room()}")
+            if current_room.is_light or player.get_item_name('lamp'):
+                print(f"\nCurrent {current_room} \n")
+                print(f"{current_room.view_items_room()}")
         elif decision is "n" and hasattr(current_room, 'n_to'):
             current_room = current_room.n_to
-            print(f"\nCurrent {current_room} \n")
-            print(f"{current_room.view_items_room()}")
+            if current_room.is_light or player.get_item_name('lamp'):
+                print(f"\nCurrent {current_room} \n")
+                print(f"{current_room.view_items_room()}")
         elif decision is "e" and hasattr(current_room, 'e_to'):
             current_room = current_room.e_to
-            print(f"\nCurrent {current_room} \n")
-            print(f"{current_room.view_items_room()}")
+            if current_room.is_light or player.get_item_name('lamp'):
+                print(f"\nCurrent {current_room} \n")
+                print(f"{current_room.view_items_room()}")
+            else:
+                print(f"\nThis room is pitch black, perhaps get a light source")
         elif decision is "w" and hasattr(current_room, 'w_to'):
             current_room = current_room.w_to
-            print(f"\nCurrent {current_room} \n")
-            print(f"{current_room.view_items_room()}")
+            if current_room.is_light or player.get_item_name('lamp'):
+                print(f"\nCurrent {current_room} \n")
+                print(f"{current_room.view_items_room()}")
         elif decision is "i":
             print(player.view_inventory())
         elif decision is "c":
-            print(f"\nCurrent {current_room} \n")
-            print(f"{current_room.view_items_room()}")
+            if current_room.is_light or player.get_item_name('lamp'):
+                print(f"\nCurrent {current_room} \n")
+                print(f"{current_room.view_items_room()}")
+            else:
+                print(f"\nThis room is pitch black, perhaps get a light source")
         elif decision is "q":
             print(f"Thank you for playing!")
             break
